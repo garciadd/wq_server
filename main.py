@@ -31,8 +31,8 @@ args = parser.parse_args()
 sat_args = json.loads(args.sat_args)
 output_path = args.path
 
-#local_path = paths.get_data_dir()
-local_path = '/Dani/data'
+local_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+local_path = os.path.join(local_path, 'data')
 if not (os.path.isdir(local_path)):
     os.mkdir(local_path)
 
@@ -58,26 +58,19 @@ if sat_args['sat_type'] == "Sentinel2":
                'output_path': local_path}
 
     #download sentinel files
-#    s = sentinel.download_sentinel(**s2_args)
-#    s2_tiles = s.download()
-
-    s2_tiles = os.listdir(local_path)
+    s = sentinel.download_sentinel(**s2_args)
+    s2_tiles = s.download()
 
     ## Satsr module to super-resolve the satellite bands
-
     for tile in s2_tiles:
-        if tile.startswith('LC'):
-            continue
-        if os.path.isdir(os.path.join(local_path, tile)):
-            continue
 
         print ("Preprocessing data ...")
         print ("super resolution ...")
 
         tile = tile.split('.')[0]
 
-        s2_file = os.path.join(local_path, '{}.zip'.format(tile))
-        tif_file = os.path.join(local_path, '{}.tif'.format(tile))
+        s2_file = os.path.join(s2_args['output_path'], '{}.zip'.format(tile))
+        tif_file = os.path.join(s2_args['output_path'], '{}.tif'.format(tile))
 
         content_type = 'application/zip'
 
@@ -87,10 +80,10 @@ if sat_args['sat_type'] == "Sentinel2":
         s2r_args = {'files': [file], 'output_path':json.dumps(tif_file), 'roi_x_y_test': "null" , 'roi_lon_lat_test': coord, 'max_res_test': "null"}
         predict_data(s2r_args)
 
-#        print ("atmospheric corrections ...")
-#
-#        ## atcor_sat module to apply atmospheric correction
-        at = atcor.atcor(local_path, tile, output_path)
+        print ("atmospheric corrections ...")
+
+        ## atcor_sat module to apply atmospheric correction
+        at = atcor.atcor(s2_args['output_path'], tile, output_path)
         at.load_bands()
 
 elif sat_args['sat_type'] == "Landsat8":
@@ -110,25 +103,19 @@ elif sat_args['sat_type'] == "Landsat8":
                'password': l8_credentials['password'],
                'output_path': local_path}
 
-#    #download landsat files
-#    l = landsat.download_landsat(**l8_args)
-#    l8_tiles = l.download()
-
-    l8_tiles = os.listdir(local_path)
+    #download landsat files
+    l = landsat.download_landsat(**l8_args)
+    l8_tiles = l.download()
 
     for tile in l8_tiles:
-        if tile.startswith('S2'):
-            continue
-        if os.path.isdir(os.path.join(local_path, tile)):
-            continue
 
         print ("Preprocessing data ...")
         print ("super resolution ...")
 
         tile = tile.split('.')[0]
 
-        l8_file = os.path.join(local_path, '{}.zip'.format(tile))
-        tif_file = os.path.join(local_path, '{}.tif'.format(tile))
+        l8_file = os.path.join(l8_args['output_path'], '{}.zip'.format(tile))
+        tif_file = os.path.join(l8_args['output_path'], '{}.tif'.format(tile))
 
         content_type = 'application/zip'
 
@@ -138,10 +125,10 @@ elif sat_args['sat_type'] == "Landsat8":
         l8sr_args = {'satellite': '"landsat8"', 'output_path':json.dumps(tif_file), 'files': [file], 'roi_x_y_test': "null" , 'roi_lon_lat_test': coord, 'max_res_test': "null"}
         predict_data(l8sr_args)
 
-#        print ("atmospheric corrections ...")
-#
-#        ## atcor_sat module to apply atmospheric correction
-        at = atcor.atcor(local_path, tile, output_path)
+        print ("atmospheric corrections ...")
+
+        ## atcor_sat module to apply atmospheric correction
+        at = atcor.atcor(l8_args['output_path'], tile, output_path)
         at.load_bands()
 
 elif sat_args['sat_type'] == 'All':
@@ -162,25 +149,19 @@ elif sat_args['sat_type'] == 'All':
                'password': s2_credentials['password'],
                'output_path': local_path}
 
-#    #download sentinel files
-#    s = sentinel.download_sentinel(**s2_args)
-#    s2_tiles = s.download()
-
-    s2_tiles = os.listdir(local_path)
+    #download sentinel files
+    s = sentinel.download_sentinel(**s2_args)
+    s2_tiles = s.download()
 
     for tile in s2_tiles:
-        if tile.startswith('LC'):
-            continue
-        if os.path.isdir(os.path.join(local_path, tile)):
-            continue
 
         print ("Preprocessing data ...")
         print ("super resolution ...")
 
         tile = tile.split('.')[0]
 
-        s2_file = os.path.join(local_path, '{}.zip'.format(tile))
-        tif_file = os.path.join(local_path, '{}.tif'.format(tile))
+        s2_file = os.path.join(s2_args['output_path'], '{}.zip'.format(tile))
+        tif_file = os.path.join(s2_args['output_path'], '{}.tif'.format(tile))
 
         content_type = 'application/zip'
 
@@ -190,10 +171,10 @@ elif sat_args['sat_type'] == 'All':
         s2r_args = {'files': [file], 'output_path':json.dumps(tif_file), 'roi_x_y_test': "null" , 'roi_lon_lat_test': coord, 'max_res_test': "null"}
         predict_data(s2r_args)
 
-#        print ("atmospheric corrections ...")
-#
-#        ## atcor_sat module to apply atmospheric correction
-        at = atcor.atcor(local_path, tile, output_path)
+        print ("atmospheric corrections ...")
+
+        ## atcor_sat module to apply atmospheric correction
+        at = atcor.atcor(s2_args['output_path'], tile, output_path)
         at.load_bands()
 
     print ("Downloading Landsat data ...")
@@ -211,25 +192,19 @@ elif sat_args['sat_type'] == 'All':
                'password': l8_credentials['password'],
                'output_path': local_path}
 
-#    #download landsat files
-#    l = landsat.download_landsat(**l8_args)
-#    l8_tiles = l.download()
-
-    l8_tiles = os.listdir(local_path)
+    #download landsat files
+    l = landsat.download_landsat(**l8_args)
+    l8_tiles = l.download()
 
     for tile in l8_tiles:
-        if tile.startswith('S2'):
-            continue
-        if os.path.isdir(os.path.join(local_path, tile)):
-            continue
 
         print ("Preprocessing data ...")
         print ("super resolution ...")
 
         tile = tile.split('.')[0]
 
-        l8_file = os.path.join(local_path, '{}.zip'.format(tile))
-        tif_file = os.path.join(local_path, '{}.tif'.format(tile))
+        l8_file = os.path.join(l8_args['output_path'], '{}.zip'.format(tile))
+        tif_file = os.path.join(l8_args['output_path'], '{}.tif'.format(tile))
 
         content_type = 'application/zip'
 
@@ -239,8 +214,8 @@ elif sat_args['sat_type'] == 'All':
         l8sr_args = {'satellite': '"landsat8"', 'output_path':json.dumps(tif_file), 'files': [file], 'roi_x_y_test': "null" , 'roi_lon_lat_test': coord, 'max_res_test': "null"}
         predict_data(l8sr_args)
 
-#        print ("atmospheric corrections ...")
-#
-#        ## atcor_sat module to apply atmospheric correction
-        at = atcor.atcor(local_path, tile, output_path)
+        print ("atmospheric corrections ...")
+
+        ## atcor_sat module to apply atmospheric correction
+        at = atcor.atcor(l8_args['output_path'], tile, output_path)
         at.load_bands()
