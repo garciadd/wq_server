@@ -125,7 +125,7 @@ elif sat_args['sat_type'] == 'All':
         predict_data(s2r_args)
 
         ## atcor_sat module to apply atmospheric correction
-        at = atcor.atcor(l8_args['output_path'], tile, output_path)
+        at = atcor.atcor(s2_args['output_path'], tile, output_path)
         at.load_bands()
 
     print ("Downloading Landsat data ...")
