@@ -7,6 +7,7 @@ import os
 
 #sat module
 from sat_server import sat
+from sat_modules import metadata_gen
 
 #satsr module
 from deepaas.model.v2.wrapper import UploadedFile
@@ -65,6 +66,19 @@ if sat_args['sat_type'] == "Sentinel2":
         at = atcor.atcor(s2_args['output_path'], tile, output_path)
         at.load_bands()
 
+        #attach metadata in onedata
+        onedata_args = {'title': '{}.nc'.format(tile),
+                        'dateIni': sat_args['start_date'],
+                        'dateEnd': sat_args['end_date'],
+                        'geographicDesc': sat_args['region'],
+                        'westBounding' : str(sat_args['coordinates']['W']),
+                        'eastBounding': str(sat_args['coordinates']['E']),
+                        'northBounding': str(sat_args['coordinates']['N']),
+                        'southBounding': str(sat_args['coordinates']['S']),
+                        'params': 'Super - Resolution Bands'}
+
+        metadata_gen.metadata_gen(**onedata_args)
+
 elif sat_args['sat_type'] == "Landsat8":
 
     print ("Downloading Landsat data ...")
@@ -95,6 +109,19 @@ elif sat_args['sat_type'] == "Landsat8":
         ## atcor_sat module to apply atmospheric correction
         at = atcor.atcor(l8_args['output_path'], tile, output_path)
         at.load_bands()
+
+        #attach metadata in onedata
+        onedata_args = {'title': '{}.nc'.format(tile),
+                        'dateIni': sat_args['start_date'],
+                        'dateEnd': sat_args['end_date'],
+                        'geographicDesc': sat_args['region'],
+                        'westBounding' : str(sat_args['coordinates']['W']),
+                        'eastBounding': str(sat_args['coordinates']['E']),
+                        'northBounding': str(sat_args['coordinates']['N']),
+                        'southBounding': str(sat_args['coordinates']['S']),
+                        'params': 'SuperResolution Bands'}
+
+        metadata_gen.metadata_gen(**onedata_args)
 
 elif sat_args['sat_type'] == 'All':
 
@@ -128,6 +155,19 @@ elif sat_args['sat_type'] == 'All':
         at = atcor.atcor(s2_args['output_path'], tile, output_path)
         at.load_bands()
 
+        #attach metadata in onedata
+        onedata_args = {'title': '{}.nc'.format(tile),
+                        'dateIni': sat_args['start_date'],
+                        'dateEnd': sat_args['end_date'],
+                        'geographicDesc': sat_args['region'],
+                        'westBounding' : str(sat_args['coordinates']['W']),
+                        'eastBounding': str(sat_args['coordinates']['E']),
+                        'northBounding': str(sat_args['coordinates']['N']),
+                        'southBounding': str(sat_args['coordinates']['S']),
+                        'params': 'Super - Resolution Bands'}
+
+        metadata_gen.metadata_gen(**onedata_args)
+
     print ("Downloading Landsat data ...")
 
     l8_args = {'inidate': sat_args['start_date'],
@@ -156,3 +196,16 @@ elif sat_args['sat_type'] == 'All':
         ## atcor_sat module to apply atmospheric correction
         at = atcor.atcor(l8_args['output_path'], tile, output_path)
         at.load_bands()
+
+        #attach metadata in onedata
+        onedata_args = {'title': '{}.nc'.format(tile),
+                        'dateIni': sat_args['start_date'],
+                        'dateEnd': sat_args['end_date'],
+                        'geographicDesc': sat_args['region'],
+                        'westBounding' : str(sat_args['coordinates']['W']),
+                        'eastBounding': str(sat_args['coordinates']['E']),
+                        'northBounding': str(sat_args['coordinates']['N']),
+                        'southBounding': str(sat_args['coordinates']['S']),
+                        'params': 'Super - Resolution Bands'}
+
+        metadata_gen.metadata_gen(**onedata_args)
